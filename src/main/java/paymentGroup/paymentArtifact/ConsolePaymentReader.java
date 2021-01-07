@@ -25,7 +25,6 @@ public class ConsolePaymentReader implements PaymentReader {
 		}
 	}
 	
-	@Override
 	public void readData(String input) {
 		String currencyCode;
 		BigDecimal amount;
@@ -48,7 +47,6 @@ public class ConsolePaymentReader implements PaymentReader {
 		return;
 	}
 	
-	@Override
 	public PaymentRecord getPaymentRecords() {
 		return this.payment;
 	}
@@ -92,10 +90,8 @@ public class ConsolePaymentReader implements PaymentReader {
 		String currencyCode = st.nextToken();
 		String amount = st.nextToken();
 		
-		if (currencyCode.length() != 3 && !currencyCode.chars().allMatch(Character::isLetter))
-			return false;
-		
-		if (!NumberUtils.isCreatable(amount))
+		if (currencyCode.length() != 3 || !currencyCode.matches("^[a-zA-Z]{3}") || 
+				!NumberUtils.isCreatable(amount))
 			return false;
 		
 		return true;

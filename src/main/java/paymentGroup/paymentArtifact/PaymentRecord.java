@@ -10,10 +10,16 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  */
 public class PaymentRecord {
-	private Map<String, BigDecimal> records = new ConcurrentHashMap<>();
+	private Map<String, BigDecimal> records = new ConcurrentHashMap<String, BigDecimal>();
 	
-	public void addAmount(final String currencyCode, final BigDecimal amount) {
-		this.records.merge(currencyCode, amount, (oldValue, newValue) -> oldValue.add(newValue));
+	public synchronized void addAmount(final String currencyCode, final BigDecimal amount) {
+		if (!this.records.containsKey(currencyCode)) {
+			this.records.put(currencyCode, amount);
+		} else {
+			BigDecimal oldValue = this.records.get(currencyCode);
+			BigDecimal newValue = oldValue.add(amount);
+			this.records.put(currencyCode, newValue);
+		}
 	}
 	
 	public Map<String, BigDecimal> getRecords() {

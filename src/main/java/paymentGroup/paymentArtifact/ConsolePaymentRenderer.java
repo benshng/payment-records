@@ -1,6 +1,7 @@
 package paymentGroup.paymentArtifact;
 
 import java.math.BigDecimal;
+import java.util.Map;
 
 /**
  * 
@@ -10,21 +11,20 @@ import java.math.BigDecimal;
 public class ConsolePaymentRenderer implements PaymentRenderer {
 	private PaymentReader dataProvider;
 	
-	@Override
 	public void output() {
-		this.dataProvider.getPaymentRecords().getRecords()
-			.forEach((currencyCode, amount) -> {
-				if (amount.compareTo(BigDecimal.ZERO) != 0)
-					System.out.println(currencyCode + " " + amount);
-				});
+		synchronized(dataProvider.getPaymentRecords()) {
+			for (Map.Entry<String, BigDecimal> entry : this.dataProvider.getPaymentRecords().getRecords().entrySet()) {
+				if (entry.getValue().compareTo(BigDecimal.ZERO) != 0) {
+					System.out.println(entry.getKey() + " " + entry.getValue());
+				}
+			}
+		}
 	}
 
-	@Override
 	public void setDataProvider(PaymentReader provider) {
 		this.dataProvider = provider;
 	}
 
-	@Override
 	public PaymentReader getDataProvider() {
 		return this.dataProvider;
 	}
